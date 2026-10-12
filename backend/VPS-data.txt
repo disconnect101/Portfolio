@@ -1,0 +1,12 @@
+Public IPv4 address
+54.252.162.247
+
+Private IPv4 address
+172.26.7.148
+
+Public IPv6 address
+2406:da1c:1c4f:6000:9b87:2287:c328:5c2f
+
+SSH
+Username
+ubuntu
