@@ -1,6 +1,3 @@
-Public IPv4 address
-54.252.162.247
-
 Private IPv4 address
 172.26.7.148
 
@@ -10,3 +7,6 @@ Public IPv6 address
 SSH
 Username
 ubuntu
+
+public Static IP
+52.64.29.31
