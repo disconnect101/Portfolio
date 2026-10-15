@@ -41,12 +41,12 @@ public class DataSeeder implements CommandLineRunner {
         p.setDescription("I'm a developer who enjoys building clean, reliable software and turning ideas into "
                 + "polished products. This is placeholder text: replace it with a short paragraph about who you are, "
                 + "what you work on, and what you care about.");
-        p.setCoverPhotoUrl("/cover.svg");
-        p.setProfilePhotoUrl("/avatar.svg");
-        p.setEmail("aditya.dev.forall@gmail.com");
+        p.setCoverPhotoUrl("/aditya_cover.jpg");
+        p.setProfilePhotoUrl("/aditya_profile.svg");
+        p.setEmail("adityagupta4114@gmail.com");
         p.setLocation("India");
-        p.setGithubUrl("https://github.com/your-username");
-        p.setLinkedinUrl("https://linkedin.com/in/your-username");
+        p.setGithubUrl("https://github.com/disconnect101");
+        p.setLinkedinUrl("https://www.linkedin.com/in/adityagupta4114/");
         profiles.save(p);
 
         projects.saveAll(List.of(
