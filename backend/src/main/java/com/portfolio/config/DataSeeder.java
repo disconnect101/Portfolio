@@ -42,7 +42,7 @@ public class DataSeeder implements CommandLineRunner {
                 + "polished products. This is placeholder text: replace it with a short paragraph about who you are, "
                 + "what you work on, and what you care about.");
         p.setCoverPhotoUrl("/aditya_cover.jpg");
-        p.setProfilePhotoUrl("/aditya_profile.svg");
+        p.setProfilePhotoUrl("/aditya_profile.jpg");
         p.setEmail("adityagupta4114@gmail.com");
         p.setLocation("India");
         p.setGithubUrl("https://github.com/disconnect101");
