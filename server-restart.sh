@@ -1,4 +1,4 @@
-cd ~/portfolio
+cd ~/portfolio/Portfolio
 # pull/upload updated code
 git pull
 cd backend && mvn clean package -DskipTests && sudo systemctl restart portfolio-api
