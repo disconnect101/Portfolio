@@ -1,6 +1,7 @@
 backend/target/
 frontend/node_modules/
 frontend/dist/
+go-backend/uploads/
 .idea/
 *.iml
 .DS_Store

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar.jsx';
 import Hero from './components/Hero.jsx';
-import About from './components/About.jsx';
 import Projects from './components/Projects.jsx';
 import Experience from './components/Experience.jsx';
 import Education from './components/Education.jsx';
 import Footer from './components/Footer.jsx';
+import Admin from './components/Admin.jsx';
 
 // Set VITE_API_URL (e.g. https://api.example.com) when the API is on a different origin.
 const API = import.meta.env.VITE_API_URL || '';
@@ -28,6 +28,13 @@ function useTheme() {
 }
 
 export default function App() {
+  if (window.location.pathname === '/admin' || window.location.pathname === '/admin/') {
+    return <Admin />;
+  }
+  return <Portfolio />;
+}
+
+function Portfolio() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [theme, toggleTheme] = useTheme();
@@ -62,9 +69,8 @@ export default function App() {
       <Navbar name={profile.name} theme={theme} onToggleTheme={toggleTheme} />
       <main>
         <Hero profile={profile} />
-        <About profile={profile} />
-        <Education items={education} />
         <Experience items={experience} />
+        <Education items={education} photoUrl={data.educationPhotoPath && API + data.educationPhotoPath} />
         <Projects projects={projects} />
       </main>
       <Footer profile={profile} />

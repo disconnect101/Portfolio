@@ -1,7 +1,8 @@
-export default function Education({ items }) {
+export default function Education({ items, photoUrl }) {
   return (
-    <section id="education" className="section alt">
-      <div className="container narrow">
+    <section id="education" className="section education"
+      style={photoUrl ? { '--college-photo': `url(${JSON.stringify(photoUrl)})` } : undefined}>
+      <div className="container">
         <h2>Education</h2>
         <div className="timeline">
           {items.map((e) => (

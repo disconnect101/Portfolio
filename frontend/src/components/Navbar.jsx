@@ -5,9 +5,9 @@ export default function Navbar({ name, theme, onToggleTheme }) {
         <a href="#top" className="brand">{name}</a>
         <nav>
           <a href="#about">About</a>
-          <a href="#projects">Projects</a>
           <a href="#experience">Experience</a>
           <a href="#education">Education</a>
+          <a href="#projects">Projects</a>
           <button
             className="theme-toggle"
             onClick={onToggleTheme}

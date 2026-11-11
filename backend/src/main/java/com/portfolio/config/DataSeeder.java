@@ -12,8 +12,7 @@ import java.util.List;
 
 /**
  * Seeds PLACEHOLDER content on first start (only when the profile table is empty).
- * Edit the values below with your real details, then wipe the tables (or the docker volume)
- * and restart, or just update the rows directly in the database.
+ * After first start, edit the saved content through /admin instead of resetting the database.
  */
 @Component
 public class DataSeeder implements CommandLineRunner {

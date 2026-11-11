@@ -97,13 +97,13 @@ When the application has started, verify it at:
 curl http://localhost:8080/api/portfolio
 ```
 
-The database container exposes PostgreSQL at `localhost:5433`. Port `5433` is used intentionally so it does not conflict with a PostgreSQL installation already running on the Mac at port `5432`.
+The database container exposes PostgreSQL at `localhost:5432`. Stop any other PostgreSQL server using that port before starting the container.
 
 ### Local database credentials
 
 ```text
 Host:     localhost
-Port:     5433
+Port:     5432
 Database: portfolio
 Username: portfolio
 Password: portfolio
@@ -129,7 +129,7 @@ SELECT current_user, current_database();
 To test the connection from the Mac instead of from the container:
 
 ```bash
-psql "postgresql://portfolio:portfolio@127.0.0.1:5433/portfolio" \
+psql "postgresql://portfolio:portfolio@127.0.0.1:5432/portfolio" \
   -c "SELECT current_user, current_database();"
 ```
 
@@ -161,10 +161,13 @@ spring-boot:run -Dspring-boot.run.profiles=h2
 The defaults are in `src/main/resources/application.properties`. They can be overridden with environment variables:
 
 ```text
-DB_URL=jdbc:postgresql://localhost:5433/portfolio
+DB_URL=jdbc:postgresql://localhost:5432/portfolio
 DB_USER=portfolio
 DB_PASSWORD=portfolio
 CORS_ORIGINS=http://localhost:5173
+ADMIN_BOOTSTRAP_KEY=<unique random key of at least 32 characters, needed only for first launch>
+ADMIN_SESSION_MINUTES=30
+SESSION_COOKIE_SECURE=false
 ```
 
 For example:
@@ -177,11 +180,11 @@ CORS_ORIGINS='https://portfolio.example.com' \
 mvn spring-boot:run
 ```
 
-Never commit production database passwords to Git.
+Never commit production database passwords or the admin key to Git.
 
 ## API endpoints
 
-All endpoints are read-only and return JSON.
+The public endpoints are read-only and return JSON.
 
 ```text
 GET /api/portfolio
@@ -192,6 +195,37 @@ GET /api/experience
 ```
 
 The initial portfolio content is seeded by `DataSeeder` when the database is empty.
+
+### Admin editing
+
+Generate a key with `openssl rand -hex 32`. Set it as `ADMIN_BOOTSTRAP_KEY` for the first backend launch. If the database has no admin credential, the backend stores a randomly salted PBKDF2 hash in PostgreSQL; the plaintext key is never saved there. Once seeded, remove `ADMIN_BOOTSTRAP_KEY` and restart—the backend authenticates future logins against the database hash. If the DB already has a credential, setting a new bootstrap key does **not** replace it. The old `ADMIN_KEY` setting from the first implementation is no longer used.
+
+Open the frontend at `/admin` and enter the key. A successful login creates a server-side session with an HttpOnly, SameSite=Strict cookie. It expires after 30 minutes by default, even if the admin remains active; change `ADMIN_SESSION_MINUTES` if needed. Write requests also use a session-bound CSRF token. Logout invalidates the session. A backend restart also ends in-memory sessions. Keep the frontend and API on the same origin, and use HTTPS in production.
+
+On an Ubuntu VM running the backend as a systemd service, keep the key outside the repository:
+
+```bash
+sudo touch /etc/portfolio-api.env
+sudo chown root:root /etc/portfolio-api.env
+sudo chmod 600 /etc/portfolio-api.env
+sudo nano /etc/portfolio-api.env
+```
+
+For the first launch, add these lines to that file (replace the placeholder with your generated key):
+
+```text
+ADMIN_BOOTSTRAP_KEY=<your-generated-key>
+SESSION_COOKIE_SECURE=true
+```
+
+Then run `sudo systemctl edit portfolio-api` and add:
+
+```ini
+[Service]
+EnvironmentFile=/etc/portfolio-api.env
+```
+
+Run `sudo systemctl daemon-reload && sudo systemctl restart portfolio-api`. After confirming login works, remove the `ADMIN_BOOTSTRAP_KEY` line from `/etc/portfolio-api.env` and restart the service again. Keep `SESSION_COOKIE_SECURE=true`. Do not put the key in `VITE_*` variables; those are bundled into public frontend files. Keep Lightsail port 8080 closed; Caddy should reach the backend through `127.0.0.1:8080`.
 
 ## Build a JAR
 
@@ -221,13 +255,13 @@ This normally means the backend could not connect to PostgreSQL. Confirm that th
 
 ```bash
 docker compose exec db pg_isready -U portfolio -d portfolio
-psql "postgresql://portfolio:portfolio@127.0.0.1:5433/portfolio" \
+psql "postgresql://portfolio:portfolio@127.0.0.1:5432/portfolio" \
   -c "SELECT current_user, current_database();"
 ```
 
 Also check that IntelliJ has not set stale `DB_URL`, `DB_USER`, or `DB_PASSWORD` environment variables in its Run Configuration.
 
-### Port 5433 is already in use
+### Port 5432 is already in use
 
 Choose another unused host port in `docker-compose.yml`, for example:
 
