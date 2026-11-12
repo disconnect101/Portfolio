@@ -10,23 +10,6 @@ import Admin from './components/Admin.jsx';
 // Set VITE_API_URL (e.g. https://api.example.com) when the API is on a different origin.
 const API = import.meta.env.VITE_API_URL || '';
 
-function useTheme() {
-  const [theme, setTheme] = useState(() => {
-    try {
-      const saved = localStorage.getItem('theme');
-      if (saved) return saved;
-    } catch { /* ignore */ }
-    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  });
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    try { localStorage.setItem('theme', theme); } catch { /* ignore */ }
-  }, [theme]);
-
-  return [theme, () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))];
-}
-
 export default function App() {
   if (window.location.pathname === '/admin' || window.location.pathname === '/admin/') {
     return <Admin />;
@@ -37,7 +20,6 @@ export default function App() {
 function Portfolio() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
-  const [theme, toggleTheme] = useTheme();
 
   useEffect(() => {
     fetch(`${API}/api/portfolio`)
@@ -66,7 +48,7 @@ function Portfolio() {
 
   return (
     <>
-      <Navbar name={profile.name} theme={theme} onToggleTheme={toggleTheme} />
+      <Navbar name={profile.name} />
       <main>
         <Hero profile={profile} />
         <Experience items={experience} />

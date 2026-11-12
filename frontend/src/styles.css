@@ -1,4 +1,5 @@
 :root {
+  color-scheme: only light;
   --bg: #ffffff;
   --bg-alt: #f6f7fb;
   --text: #0f172a;
@@ -10,18 +11,6 @@
   --shadow: 0 6px 24px rgba(15, 23, 42, 0.07);
 }
 
-:root[data-theme='dark'] {
-  --bg: #0b1020;
-  --bg-alt: #111831;
-  --text: #e8ecf8;
-  --muted: #9aa6c3;
-  --border: #222c4a;
-  --accent: #8b93ff;
-  --accent-contrast: #0b1020;
-  --card: #151d38;
-  --shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
-}
-
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 body {
@@ -30,7 +19,6 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.65;
-  transition: background 0.25s, color 0.25s;
 }
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -51,10 +39,6 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
 .navbar nav { display: flex; align-items: center; gap: 22px; }
 .navbar nav a { color: var(--muted); font-size: 0.95rem; font-weight: 500; }
 .navbar nav a:hover { color: var(--text); text-decoration: none; }
-.theme-toggle {
-  border: 1px solid var(--border); background: var(--card); border-radius: 999px;
-  width: 36px; height: 36px; cursor: pointer; font-size: 1rem;
-}
 
 /* Cover and two-column introduction */
 .hero { margin-top: 24px; }
@@ -119,14 +103,13 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
   transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 .contact-link svg { width: 17px; height: 17px; fill: currentColor; flex: none; }
-.contact-link-primary svg { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 .contact-link:hover {
   color: var(--text); text-decoration: none; border-color: color-mix(in srgb, var(--accent) 48%, var(--border));
   background: var(--card); box-shadow: 0 5px 14px color-mix(in srgb, var(--accent) 13%, transparent); transform: translateY(-1px);
 }
 .contact-link:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 32%, transparent); outline-offset: 3px; }
-.contact-link-primary { padding-inline: 17px; color: var(--accent-contrast); background: var(--accent); border-color: var(--accent); }
-.contact-link-primary:hover { color: var(--accent-contrast); background: color-mix(in srgb, var(--accent) 88%, #000); border-color: var(--accent); }
+.contact-link-resume { color: var(--accent-contrast); background: var(--accent); border-color: var(--accent); }
+.contact-link-resume:hover { color: var(--accent-contrast); background: color-mix(in srgb, var(--accent) 88%, #000); border-color: var(--accent); }
 
 .links { display: flex; flex-wrap: wrap; gap: 12px; }
 .btn {

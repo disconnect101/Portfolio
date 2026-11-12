@@ -54,7 +54,7 @@ async function request(path, csrfToken, options = {}) {
     if (response.status === 503) throw new Error('Admin account is not configured on the server.');
     if (options.body instanceof File && [400, 413, 415].includes(response.status)) {
       const message = response.headers.get('Content-Type')?.startsWith('text/plain') && await response.text();
-      throw new Error(message || 'Choose a JPEG or PNG within the upload limits.');
+      throw new Error(message || 'Check the file type and upload size.');
     }
     throw new Error(`Request failed (${response.status}). Check the fields and try again.`);
   }
@@ -80,7 +80,8 @@ function Field({ field, value, onChange, required }) {
   );
 }
 
-function ImageUploadForm({ title, buttonLabel, children, onUpload }) {
+function UploadForm({ title, buttonLabel, children, onUpload,
+  accept = 'image/jpeg,image/png', fileLabel = 'Choose a JPEG or PNG (up to 5 MiB and 24 megapixels)' }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
@@ -88,12 +89,12 @@ function ImageUploadForm({ title, buttonLabel, children, onUpload }) {
   async function upload(event) {
     event.preventDefault();
     const form = event.currentTarget;
-    const file = form.elements.photo.files[0];
+    const file = form.elements.upload.files[0];
     if (!file) return;
     setError('');
     setSaved(false);
     if (file.size > 5 * 1024 * 1024) {
-      setError('Choose a photo of 5 MiB or less.');
+      setError('Choose a file of 5 MiB or less.');
       return;
     }
     setBusy(true);
@@ -112,8 +113,8 @@ function ImageUploadForm({ title, buttonLabel, children, onUpload }) {
     <form className="admin-card admin-photo" onSubmit={upload}>
       <h3>{title}</h3>
       {children}
-      <label className="admin-field">Choose a JPEG or PNG (up to 5 MiB and 24 megapixels)
-        <input type="file" name="photo" accept="image/jpeg,image/png" required disabled={busy}
+      <label className="admin-field">{fileLabel}
+        <input type="file" name="upload" accept={accept} required disabled={busy}
           onChange={() => { setSaved(false); setError(''); }} />
       </label>
       {error && <p className="admin-error" role="alert">{error}</p>}
@@ -190,7 +191,7 @@ export default function Admin() {
     setData(await response.json());
   }
 
-  async function uploadImage(path, file) {
+  async function uploadFile(path, file) {
     await request(path, session.csrfToken, { method: 'PUT', body: file });
     await load();
   }
@@ -266,6 +267,12 @@ export default function Admin() {
       </header>
       <section className="admin-section">
         <h2>Profile</h2>
+        {Object.hasOwn(data.profile, 'hasResume') && (
+          <UploadForm title="Resume" buttonLabel="Upload Resume" accept="application/pdf,.pdf"
+            fileLabel="Choose a PDF (up to 5 MiB)" onUpload={(file) => uploadFile('/api/admin/resume', file)}>
+            {data.profile.hasResume && <p><a href={API + '/api/resume'} target="_blank" rel="noreferrer">View current Resume</a></p>}
+          </UploadForm>
+        )}
         <Editor key={`profile-${data.profile?.id}`} title="Your profile" fields={profileFields}
           required="name" initial={data.profile || {}}
           onSave={async (values) => { await request('/api/admin/profile', session.csrfToken,
@@ -275,10 +282,10 @@ export default function Admin() {
         <section className="admin-section" key={section.key}>
           <h2>{section.label}</h2>
           {section.key === 'education' && Object.hasOwn(data, 'educationPhotoPath') &&
-            <ImageUploadForm title="College background photo" buttonLabel="Upload photo"
-              onUpload={(file) => uploadImage('/api/admin/education-photo', file)}>
+            <UploadForm title="College background photo" buttonLabel="Upload photo"
+              onUpload={(file) => uploadFile('/api/admin/education-photo', file)}>
               <img src={data.educationPhotoPath ? API + data.educationPhotoPath : '/college-campus.jpg'} alt="Current Education background" />
-            </ImageUploadForm>}
+            </UploadForm>}
           <div className="admin-list">
             {data[section.key].map((item) => (
               <div key={item.id}>
@@ -289,10 +296,10 @@ export default function Admin() {
                   onDelete={async () => { await request(`/api/admin/${section.key}/${item.id}`, session.csrfToken,
                     { method: 'DELETE' }); await load(); }} />
                 {section.key === 'experience' && item.company?.trim() && Object.hasOwn(item, 'companyLogoPath') &&
-                  <ImageUploadForm key={item.company} title={`Logo for ${item.company}`} buttonLabel="Upload logo"
-                    onUpload={(file) => uploadImage(`/api/admin/experience/${item.id}/logo`, file)}>
+                  <UploadForm key={item.company} title={`Logo for ${item.company}`} buttonLabel="Upload logo"
+                    onUpload={(file) => uploadFile(`/api/admin/experience/${item.id}/logo`, file)}>
                     <CompanyLogo company={item.company} logoPath={item.companyLogoPath} />
-                  </ImageUploadForm>}
+                  </UploadForm>}
               </div>
             ))}
             <Editor key={`new-${section.key}`} title={`Add ${section.label.toLowerCase()}`}

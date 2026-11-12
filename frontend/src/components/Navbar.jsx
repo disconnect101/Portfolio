@@ -1,4 +1,4 @@
-export default function Navbar({ name, theme, onToggleTheme }) {
+export default function Navbar({ name }) {
   return (
     <header className="navbar">
       <div className="container navbar-inner">
@@ -8,14 +8,6 @@ export default function Navbar({ name, theme, onToggleTheme }) {
           <a href="#experience">Experience</a>
           <a href="#education">Education</a>
           <a href="#projects">Projects</a>
-          <button
-            className="theme-toggle"
-            onClick={onToggleTheme}
-            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-            title="Toggle theme"
-          >
-            {theme === 'dark' ? '☀️' : '🌙'}
-          </button>
         </nav>
       </div>
     </header>
