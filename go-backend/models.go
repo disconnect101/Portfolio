@@ -1,6 +1,7 @@
 package main
 
 type Profile struct {
+	HasResume       bool    `json:"hasResume"`
 	ID              int64   `json:"id"`
 	Name            *string `json:"name"`
 	Title           *string `json:"title"`

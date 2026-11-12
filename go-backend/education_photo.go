@@ -58,7 +58,7 @@ func (a *app) saveUploadedImage(c *gin.Context, folder string) (string, bool) {
 	}
 	dir := filepath.Join(a.cfg.UploadDir, folder)
 	name := fmt.Sprintf("%x.%s", sha256.Sum256(data), format)
-	if err := writePhoto(dir, name, data); err != nil {
+	if err := writeUpload(dir, name, data); err != nil {
 		serverError(c, err)
 		return "", false
 	}
@@ -103,12 +103,12 @@ func (a *app) uploadCompanyLogo(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-// Publish the complete image before making its URL current in PostgreSQL.
-func writePhoto(dir, name string, data []byte) error {
+// Publish the complete file before making its URL current in PostgreSQL.
+func writeUpload(dir, name string, data []byte) error {
 	if err := os.MkdirAll(dir, 0750); err != nil {
 		return err
 	}
-	file, err := os.CreateTemp(dir, ".photo-*")
+	file, err := os.CreateTemp(dir, ".upload-*")
 	if err != nil {
 		return err
 	}

@@ -15,11 +15,11 @@ type scanner interface{ Scan(...any) error }
 
 func scanProfile(row scanner) (Profile, error) {
 	var p Profile
-	err := row.Scan(&p.ID, &p.Name, &p.Title, &p.Description, &p.CoverPhotoURL, &p.ProfilePhotoURL, &p.Email, &p.Location, &p.GithubURL, &p.LinkedinURL)
+	err := row.Scan(&p.ID, &p.Name, &p.Title, &p.Description, &p.CoverPhotoURL, &p.ProfilePhotoURL, &p.Email, &p.Location, &p.GithubURL, &p.LinkedinURL, &p.HasResume)
 	return p, err
 }
 
-const profileColumns = `id, name, title, description, cover_photo_url, profile_photo_url, email, location, github_url, linkedin_url`
+const profileColumns = `id, name, title, description, cover_photo_url, profile_photo_url, email, location, github_url, linkedin_url, (resume_path IS NOT NULL)`
 
 func (s *Store) profile(ctx context.Context) (Profile, error) {
 	return scanProfile(s.db.QueryRowContext(ctx, `SELECT `+profileColumns+` FROM profile ORDER BY id LIMIT 1`))

@@ -46,6 +46,8 @@ CREATE TABLE IF NOT EXISTS profile
     255
 )
     );
+ALTER TABLE profile ADD COLUMN IF NOT EXISTS resume_path TEXT;
+
 CREATE TABLE IF NOT EXISTS project
 (
     id
